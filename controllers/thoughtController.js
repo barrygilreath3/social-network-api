@@ -52,14 +52,36 @@ module.exports = {
               { new: true }
             )
       )
-      .then((user) =>
-        !user
+      .then((thought) =>
+        !thought
           ? res.status(404).json({
-              message: 'Thought created but no user with this id!',
+              message: 'There is no thought here to find.',
             })
           : res.json({ message: 'Thought successfully deleted!' })
       )
       .catch((err) => res.status(500).json(err));
   },
 
+  addReaction(req, res) {
+    Thought.findOneAndUpdate({_id: req.params.thoughtId}, {$addToSet: {reactions:req.params.reactionId}}, {new:true})
+    .then((thought) => {
+        if(!thought) {
+            return res.status(404).json({msg: 'No thought with this ID'})
+        }
+    })
+      .then(() => res.json({ message: 'Thought has been interacted with!' }))
+      .catch((err) => res.status(500).json(err));
+  },
+
+  deleteReaction(req, res) {
+    Thought.findOneAndUpdate({_id: req.params.userId}, {$pull: {friends:req.params.friendId}}, {new:true})
+    .then((thought) => {
+        if(!thought) {
+            return res.status(404).json({msg: 'No thought with this ID'})
+        }
+    })
+      .then(() => res.json({ message: 'This thought reaction has been DELETED!' }))
+      .catch((err) => res.status(500).json(err));
+  },
+  
 }
