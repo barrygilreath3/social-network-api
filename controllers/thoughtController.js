@@ -6,6 +6,13 @@ module.exports = {
     Thought.find().then((response) => res.json(response)).catch(error => res.status(500).json(error))
   },
 
+  getSingleThought(req, res) {
+    Thought.findOne({ _id: req.params.thoughtId })
+        .select('-__v')
+        .then((thought) => thought ? res.json(thought) : res.status(404).json({ message: 'No thought with that ID' }))
+        .catch((error) => res.status(500).json(error));
+  },
+
   createThought(req, res) {
     Thought.create(req.body)
       .then((thought) => {
